@@ -15,9 +15,12 @@ logger:
 
 # Enable Home Assistant API
 api:
-
+  encryption:
+    key: !secret api_key
+    
 ota:
   - platform: esphome
+    password: !secret ota_password
 
 wifi:
   ssid: !secret wifi_ssid
@@ -26,6 +29,7 @@ wifi:
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "M5Cardputer Fallback Hotspot"
+    password: !secret ap_password
 
 captive_portal:
     
