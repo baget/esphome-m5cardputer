@@ -1,0 +1,87 @@
+#
+# M5Stack Cardputer - Basic ESPHome Conifugration
+# 
+esphome:
+  name: m5cardputer
+  friendly_name: M5Cardputer
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "M5Cardputer Fallback Hotspot"
+
+captive_portal:
+    
+i2s_audio:
+  i2s_lrclk_pin: GPIO43
+  i2s_bclk_pin: GPIO41
+
+microphone:
+  - platform: i2s_audio
+    id: external_mic
+    adc_type: external  
+    i2s_din_pin: GPIO46
+    pdm: true
+
+# Not Needed Since There is Mediaplayer
+# speaker:
+#   - platform: i2s_audio
+#     id: echo_speaker
+#     i2s_dout_pin: GPIO42
+#     dac_type: external
+#     mode: mono
+
+media_player:
+  - platform: i2s_audio
+    id: media_out
+    name: ESPHome I2S Media Player
+    dac_type: external
+    i2s_dout_pin: GPIO42
+    mode: mono
+
+
+spi:
+  clk_pin: GPIO36
+  mosi_pin: GPIO35
+  miso_pin: GPIO39
+
+display:
+  platform: st7789v
+  model: TTGO TDisplay 135x240
+  backlight_pin: GPIO38
+  cs_pin: GPIO37
+  dc_pin: GPIO34
+  reset_pin: GPIO33
+  rotation: 90
+  lambda: |-
+    it.print(0, 0, id(roboto_20), "Hello ESPHome!");
+
+font:
+  - file: "gfonts://Roboto"
+    id: roboto_20
+    size: 20
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO00
+      inverted: true
+    name: Button
+    id: btn
