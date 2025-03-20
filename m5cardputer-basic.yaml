@@ -1,5 +1,4 @@
-#
-# M5Stack Cardputer - Basic ESPHome Conifugration
+# M5Stack Cardputer - Basic ESPHome Configuration
 # 
 esphome:
   name: m5cardputer
@@ -17,7 +16,7 @@ logger:
 api:
   encryption:
     key: !secret api_key
-    
+
 ota:
   - platform: esphome
     password: !secret ota_password
@@ -32,7 +31,7 @@ wifi:
     password: !secret ap_password
 
 captive_portal:
-    
+
 i2s_audio:
   i2s_lrclk_pin: GPIO43
   i2s_bclk_pin: GPIO41
@@ -60,7 +59,6 @@ media_player:
     i2s_dout_pin: GPIO42
     mode: mono
 
-
 spi:
   clk_pin: GPIO36
   mosi_pin: GPIO35
@@ -68,8 +66,7 @@ spi:
 
 display:
   platform: st7789v
-  model: TTGO TDisplay 135x240
-  backlight_pin: GPIO38
+  model: TTGO_TDISPLAY_135X240
   cs_pin: GPIO37
   dc_pin: GPIO34
   reset_pin: GPIO33
@@ -89,3 +86,23 @@ binary_sensor:
       inverted: true
     name: Button
     id: btn
+
+# Use ledc to control brightness of backlight with PWM (for float output)
+output:
+  - platform: ledc
+    pin: GPIO38  # Same pin as backlight
+    id: backlight_output
+    frequency: 50 Hz
+    inverted: false
+
+# Backlight control with Home Assistant via PWM output
+light:
+  - platform: monochromatic
+    name: "Backlight"
+    output: backlight_output  # Link to the correct output component
+    id: backlight
+    restore_mode: RESTORE_AND_ON
+    gamma_correct: 2.8
+    default_transition_length: 1s
+    flash_transition_length: 0s
+    disabled_by_default: False 
