@@ -1,5 +1,3 @@
-# M5Stack Cardputer - Basic ESPHome Configuration
-# 
 esphome:
   name: m5cardputer
   friendly_name: M5Cardputer
@@ -43,14 +41,6 @@ microphone:
     i2s_din_pin: GPIO46
     pdm: true
 
-# Not Needed Since There is Mediaplayer
-# speaker:
-#   - platform: i2s_audio
-#     id: echo_speaker
-#     i2s_dout_pin: GPIO42
-#     dac_type: external
-#     mode: mono
-
 media_player:
   - platform: i2s_audio
     id: media_out
@@ -72,7 +62,8 @@ display:
   reset_pin: GPIO33
   rotation: 90
   lambda: |-
-    it.print(0, 0, id(roboto_20), "Hello ESPHome!");
+    it.print(0, 0, id(roboto_20), "NO U");
+    it.strftime(25, 25, id(roboto_20), "%Y-%m-%d %H:%M", id(sntp_time).now());
 
 font:
   - file: "gfonts://Roboto"
@@ -86,6 +77,30 @@ binary_sensor:
       inverted: true
     name: Button
     id: btn
+    on_press:
+      then:
+        - logger.log: "Button Pressed"
+        - delay: 500ms
+        - if:
+            condition:
+              # Check if the button is still pressed after 500ms (for double-tap detection)
+              binary_sensor.is_on: btn
+            then:
+              - logger.log: "Double Tap Detected"
+              - homeassistant.service:
+                  service: logbook.log
+                  data:
+                    name: "M5Cardputer"
+                    message: "Double Tap Detected"
+                    entity_id: binary_sensor.btn
+            else:
+              - logger.log: "Single Tap Detected"
+              - homeassistant.service:
+                  service: logbook.log
+                  data:
+                    name: "M5Cardputer"
+                    message: "Single Tap Detected"
+                    entity_id: binary_sensor.btn
 
 # Use ledc to control brightness of backlight with PWM (for float output)
 output:
@@ -105,4 +120,10 @@ light:
     gamma_correct: 2.8
     default_transition_length: 1s
     flash_transition_length: 0s
-    disabled_by_default: False 
+    disabled_by_default: False  
+
+# Add the time component
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: "America/Chicago"  # Change to your timezone
