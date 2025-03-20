@@ -57,6 +57,24 @@ media_player:
     i2s_dout_pin: GPIO42
     mode: mono
 
+output:
+  - platform: ledc
+    pin: GPIO38  # Same pin as backlight
+    id: backlight_output
+    frequency: 50 Hz
+    inverted: false
+
+light:
+  - platform: monochromatic
+    name: "Backlight"
+    output: backlight_output  # Link to the correct output component
+    id: backlight
+    restore_mode: RESTORE_AND_ON
+    gamma_correct: 2.8
+    default_transition_length: 1s
+    flash_transition_length: 0s
+    disabled_by_default: False      
+
 spi:
   clk_pin: GPIO36
   mosi_pin: GPIO35
@@ -64,26 +82,25 @@ spi:
 
 display:
   platform: ili9xxx
-  model: ILI9341
+  model: st7789v
   cs_pin: GPIO37
   dc_pin: GPIO34
   reset_pin: GPIO33
-  rotation: 180
+  rotation: 90
   invert_colors: true
   lambda: |-
     // Set background color to black for better contrast
-    it.fill(Color(0, 0, 0));  // Fill background with black
     Color text_color = id(color_white);  // Set text color to white
     // Print "NO U" at the top of the screen
     it.print(0, 10, id(roboto_20), text_color, "NO U");
     // Display the current time
-    it.strftime(0, -40, id(roboto_20), text_color, TextAlign::BASELINE_LEFT, "%l:%M", id(sntp_time).now());
+    it.strftime(0, 40, id(roboto_20), text_color, TextAlign::BASELINE_LEFT, "%l:%M", id(sntp_time).now());
 
 
 font:
   - file: "gfonts://Roboto"
     id: roboto_20
-    size: 20
+    size: 400
 
 # Binary sensors for rows and columns
 binary_sensor:
