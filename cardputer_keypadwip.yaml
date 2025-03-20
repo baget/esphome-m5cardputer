@@ -12,10 +12,12 @@ logger:
 
 # Enable Home Assistant API
 api:
+  encryption:
+    key: !secret api_key
 
 ota:
   - platform: esphome
-    password: "wifipassword"
+    password: !secret ota_password
 
 wifi:
   ssid: !secret wifi_ssid
@@ -24,7 +26,7 @@ wifi:
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "M5Cardputer Fallback Hotspot"
-    password: "wifipassword"
+    password: !secret ap_password
 
 captive_portal:
 
@@ -92,15 +94,15 @@ display:
     // Set background color to black for better contrast
     Color text_color = id(color_white);  // Set text color to white
     // Print "NO U" at the top of the screen
-    it.print(0, 10, id(roboto_20), text_color, "NO U");
+    it.print(49, 50, id(roboto_20), text_color, "NO U");
     // Display the current time
-    it.strftime(0, 40, id(roboto_20), text_color, TextAlign::BASELINE_LEFT, "%l:%M", id(sntp_time).now());
+    it.strftime(49, 90, id(roboto_20), text_color, TextAlign::BASELINE_LEFT, "%l:%M", id(sntp_time).now());
 
 
 font:
   - file: "gfonts://Roboto"
     id: roboto_20
-    size: 400
+    size: 20
 
 # Binary sensors for rows and columns
 binary_sensor:
