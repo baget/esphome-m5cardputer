@@ -1,0 +1,155 @@
+esphome:
+  name: m5cardputer
+  friendly_name: M5Cardputer
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+  - platform: esphome
+    password: "wifipassword"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "M5Cardputer Fallback Hotspot"
+    password: "wifipassword"
+
+captive_portal:
+
+i2s_audio:
+  i2s_lrclk_pin: GPIO43
+  i2s_bclk_pin: GPIO41
+
+color:
+  - id: color_white
+    red: 100%
+    green: 100%
+    blue: 100%
+  - id: color_green
+    red: 0%
+    green: 100%
+    blue: 0%
+
+microphone:
+  - platform: i2s_audio
+    id: external_mic
+    adc_type: external  
+    i2s_din_pin: GPIO46
+    pdm: true
+
+media_player:
+  - platform: i2s_audio
+    id: media_out
+    name: ESPHome I2S Media Player
+    dac_type: external
+    i2s_dout_pin: GPIO42
+    mode: mono
+
+spi:
+  clk_pin: GPIO36
+  mosi_pin: GPIO35
+  miso_pin: GPIO39
+
+display:
+  platform: ili9xxx
+  model: ILI9341
+  cs_pin: GPIO37
+  dc_pin: GPIO34
+  reset_pin: GPIO33
+  rotation: 180
+  invert_colors: true
+  lambda: |-
+    // Set background color to black for better contrast
+    it.fill(Color(0, 0, 0));  // Fill background with black
+    Color text_color = id(color_white);  // Set text color to white
+    // Print "NO U" at the top of the screen
+    it.print(0, 10, id(roboto_20), text_color, "NO U");
+    // Display the current time
+    it.strftime(0, -40, id(roboto_20), text_color, TextAlign::BASELINE_LEFT, "%l:%M", id(sntp_time).now());
+
+
+font:
+  - file: "gfonts://Roboto"
+    id: roboto_20
+    size: 20
+
+# Binary sensors for rows and columns
+binary_sensor:
+  - platform: gpio
+    pin: GPIO00
+    name: Row 0
+    id: row0
+  - platform: gpio
+    pin: GPIO01
+    name: Row 1
+    id: row1
+  - platform: gpio
+    pin: GPIO02
+    name: Row 2
+    id: row2
+  - platform: gpio
+    pin: GPIO03
+    name: Row 3
+    id: row3
+  - platform: gpio
+    pin: GPIO04
+    name: Row 4
+    id: row4
+  - platform: gpio
+    pin: GPIO05
+    name: Row 5
+    id: row5
+  - platform: gpio
+    pin: GPIO06
+    name: Row 6
+    id: row6
+  - platform: gpio
+    pin: GPIO07
+    name: Row 7
+    id: row7
+  - platform: gpio
+    pin: GPIO08
+    name: Column 1
+    id: col1
+  - platform: gpio
+    pin: GPIO09
+    name: Column 2
+    id: col2
+  - platform: gpio
+    pin: GPIO10
+    name: Column 3
+    id: col3
+  - platform: gpio
+    pin: GPIO11
+    name: Column 4
+    id: col4
+  - platform: gpio
+    pin: GPIO12
+    name: Column 5
+    id: col5
+  - platform: gpio
+    pin: GPIO13
+    name: Column 6
+    id: col6
+
+# Include the custom component from GitHub
+external_components:
+  - source: github://SketchySkiddieDev/m5cardputercustomcomponents/esphome/components/keypad_keypress
+
+# Define the time component
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: "America/Chicago"  # Change to your timezone
