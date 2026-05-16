@@ -8,17 +8,12 @@ This repo contain [EPSHome](https://esphome.io/) configuration Files (yaml) for 
 
 * Media Player (to play audio via M5 Cardputer Speaker)
 * User Btn (G0)
-* Display 
+* Display
+* Keyboard
 
 ## WIP
 
 * Microphone
 * Voice Assistant 
-
-## Not Working Yet
-
-* Keyboard
-
-
 
 
