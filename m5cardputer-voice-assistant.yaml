@@ -5,7 +5,7 @@ esphome:
 esp32:
   board: esp32-s3-devkitc-1
   framework:
-    type: arduino
+    type: esp-idf
 
 # Enable logging
 logger:
@@ -46,24 +46,26 @@ i2s_audio:
 microphone:
   - platform: i2s_audio
     id: external_mic
-    adc_type: external  
-    i2s_din_pin: GPIO46
+    adc_type: external
+    i2s_din_pin:
+      number: GPIO46
+      ignore_strapping_warning: true
     pdm: true
 
-# speaker:
-#   - platform: i2s_audio
-#     id: echo_speaker
-#     i2s_dout_pin: GPIO42
-#     dac_type: external
-#     mode: mono
-
-media_player:
+speaker:
   - platform: i2s_audio
-    id: media_out
-    name: ESPHome I2S Media Player
+    id: echo_speaker
     dac_type: external
     i2s_dout_pin: GPIO42
-    mode: mono
+    channel: mono
+
+media_player:
+  - platform: speaker
+    id: media_out
+    name: ESPHome Speaker Media Player
+    announcement_pipeline:
+      speaker: echo_speaker
+      num_channels: 1
 
 
 spi:
@@ -116,6 +118,7 @@ binary_sensor:
     pin:
       number: GPIO00
       inverted: true
+      ignore_strapping_warning: true
     name: Button
     id: echo_button
     on_press:
